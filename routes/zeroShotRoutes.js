@@ -8,15 +8,3 @@ router.post("/generate", generateZeroShot);
 
 export default router;
 
-
-
-
-
-
-
-
-
-
-
-
-
