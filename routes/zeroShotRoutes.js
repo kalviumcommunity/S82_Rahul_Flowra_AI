@@ -7,3 +7,16 @@ const router = express.Router();
 router.post("/generate", generateZeroShot);
 
 export default router;
+
+
+
+
+
+
+
+
+
+
+
+
+
