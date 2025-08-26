@@ -1,8 +1,10 @@
 import axios from "axios";
+import { logTokens } from "../utils/tokenUtils.js";
 
 export const generateZeroShot = async (req, res) => {
   const { domain = "", task = "", tone = "neutral", constraints = "" } = req.body;
 
+  // System prompt defines role + structured JSON output
   const systemMessage = {
     role: "system",
     content: `You are Flowra AI, an assistant for UI/UX design.
@@ -17,16 +19,21 @@ Always return JSON in this format:
 }`
   };
 
+  // User input message
   const userMessage = {
     role: "user",
-    content: `Domain: ${domain}\nTask: ${task}\nTone: ${tone}\nConstraints: ${constraints || "None"}`
+    content: `Domain: ${domain}
+Task: ${task}
+Tone: ${tone}
+Constraints: ${constraints || "None"}`
   };
 
   try {
+    // Make API request to OpenRouter
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "mistralai/mistral-7b-instruct:free", // ✅ Free model
+        model: "mistralai/mistral-7b-instruct:free", // Free model
         messages: [systemMessage, userMessage],
         temperature: 0.7,
         max_tokens: 400
@@ -40,10 +47,15 @@ Always return JSON in this format:
       }
     );
 
+    // ✅ Log tokens used for this request
+    logTokens(response.data, "Zero-Shot");
+
+    // Extract content
     const content = response.data.choices[0]?.message?.content || "";
     let parsed = null;
     try { parsed = JSON.parse(content); } catch {}
 
+    // Respond to client
     res.json({
       status: "ok",
       raw: content,
