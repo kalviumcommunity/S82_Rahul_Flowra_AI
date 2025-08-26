@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "Flowra AI backend",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,11 @@
     "express": "^4.18.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
+    "babel-jest": "^30.0.5",
+    "cross-env": "^10.0.0",
+    "jest": "^30.0.5",
     "nodemon": "^3.1.10"
   }
 }
