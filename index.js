@@ -4,7 +4,8 @@ import cors from "cors";
 import zeroShotRoutes from "./routes/zeroShotRoutes.js";
 import oneShotRoutes from "./routes/oneShotRoutes.js";
 import multiShotRoutes from "./routes/multiShotRoutes.js";
-import dynamicPromptRoutes from "./routes/dynamicPromptRoutes.js"; // ✅ import
+import dynamicPromptRoutes from "./routes/dynamicPromptRoutes.js";
+import chainOfThoughtRoutes from "./routes/chainOfThoughtRoutes.js"; // ✅ import
 
 dotenv.config();
 const app = express();
@@ -16,7 +17,8 @@ app.use(express.json());
 app.use("/api/zeroshot", zeroShotRoutes);
 app.use("/api/oneshot", oneShotRoutes);
 app.use("/api/multishot", multiShotRoutes);
-app.use("/api/dynamic", dynamicPromptRoutes); // ✅ new endpoint
+app.use("/api/dynamic", dynamicPromptRoutes);
+app.use("/api/chainofthought", chainOfThoughtRoutes); // ✅ new endpoint
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
