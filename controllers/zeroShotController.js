@@ -3,7 +3,14 @@ import axios from "axios";
 import { logTokens } from "../utils/tokenUtils.js";
 
 export const generateZeroShot = async (req, res) => {
-  const { domain = "", task = "", tone = "neutral", constraints = "", top_p = 0.9 } = req.body;
+  const { 
+    domain = "", 
+    task = "", 
+    tone = "neutral", 
+    constraints = "", 
+    top_p = 0.9, 
+    top_k = 50   // ✅ default Top-K value
+  } = req.body;
 
   // System prompt defines role + structured JSON output
   const systemMessage = {
@@ -37,10 +44,11 @@ Constraints: ${constraints || "None"}`
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "mistralai/mistral-7b-instruct:free", 
+        model: "mistralai/mistral-7b-instruct:free", // Free model
         messages: [systemMessage, userMessage],
-        temperature: 0.7,  
-        top_p: top_p,      // ✅ NEW nucleus sampling
+        temperature: 0.7,  // randomness
+        top_p: top_p,      // nucleus sampling
+        top_k: top_k,      // ✅ NEW Top-K sampling
         max_tokens: 400
       },
       {
@@ -63,7 +71,8 @@ Constraints: ${constraints || "None"}`
       raw: content,
       result: parsed,
       model: response.data.model,
-      used_top_p: top_p
+      used_top_p: top_p,
+      used_top_k: top_k   // ✅ return top_k used
     });
 
   } catch (err) {
