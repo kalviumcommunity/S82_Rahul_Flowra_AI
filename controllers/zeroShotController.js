@@ -9,7 +9,8 @@ export const generateZeroShot = async (req, res) => {
     tone = "neutral", 
     constraints = "", 
     top_p = 0.9, 
-    top_k = 50   // ✅ default Top-K value
+    top_k = 50, 
+    stop = ["\nUser:", "\nSystem:"] // ✅ default stop sequences
   } = req.body;
 
   // System prompt defines role + structured JSON output
@@ -46,10 +47,11 @@ Constraints: ${constraints || "None"}`
       {
         model: "mistralai/mistral-7b-instruct:free", // Free model
         messages: [systemMessage, userMessage],
-        temperature: 0.7,  // randomness
-        top_p: top_p,      // nucleus sampling
-        top_k: top_k,      // ✅ NEW Top-K sampling
-        max_tokens: 400
+        temperature: 0.7,
+        top_p: top_p,
+        top_k: top_k,
+        max_tokens: 400,
+        stop: stop   // ✅ NEW Stop sequence
       },
       {
         headers: {
@@ -72,7 +74,8 @@ Constraints: ${constraints || "None"}`
       result: parsed,
       model: response.data.model,
       used_top_p: top_p,
-      used_top_k: top_k   // ✅ return top_k used
+      used_top_k: top_k,
+      used_stop: stop   // ✅ return stop sequence used
     });
 
   } catch (err) {
