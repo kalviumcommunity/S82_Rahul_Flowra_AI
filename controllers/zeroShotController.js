@@ -1,8 +1,9 @@
+// controllers/zeroShotController.js
 import axios from "axios";
 import { logTokens } from "../utils/tokenUtils.js";
 
 export const generateZeroShot = async (req, res) => {
-  const { domain = "", task = "", tone = "neutral", constraints = "" } = req.body;
+  const { domain = "", task = "", tone = "neutral", constraints = "", top_p = 0.9 } = req.body;
 
   // System prompt defines role + structured JSON output
   const systemMessage = {
@@ -28,14 +29,18 @@ Tone: ${tone}
 Constraints: ${constraints || "None"}`
   };
 
+  // ✅ Log tokens for request messages before API call
+  logTokens([systemMessage, userMessage], "Zero-Shot");
+
   try {
     // Make API request to OpenRouter
     const response = await axios.post(
       "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: "mistralai/mistral-7b-instruct:free", // Free model
+        model: "mistralai/mistral-7b-instruct:free", 
         messages: [systemMessage, userMessage],
-        temperature: 0.7,
+        temperature: 0.7,  
+        top_p: top_p,      // ✅ NEW nucleus sampling
         max_tokens: 400
       },
       {
@@ -47,9 +52,6 @@ Constraints: ${constraints || "None"}`
       }
     );
 
-    // ✅ Log tokens used for this request
-    logTokens(response.data, "Zero-Shot");
-
     // Extract content
     const content = response.data.choices[0]?.message?.content || "";
     let parsed = null;
@@ -60,7 +62,8 @@ Constraints: ${constraints || "None"}`
       status: "ok",
       raw: content,
       result: parsed,
-      model: response.data.model
+      model: response.data.model,
+      used_top_p: top_p
     });
 
   } catch (err) {
